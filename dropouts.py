@@ -57,10 +57,10 @@ class AutoEncoder(object):
         updates=[]
         #Return gradient with respect to W, b1, b2.
         gparams = T.grad(cost,params)
-        gparams[0] = gparams[0] * mask[0]
-        #gparams[1] = gparams[1] * mask
-        #gparams[2] = gparams[2] * mask
-        print 'ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\n'
+        self.b1=self.b1*mask
+        gparams[0] = T.dot(gparams[0], mask)
+        gparams[1] = T.dot(gparams[1], mask)
+        gparams[2] = T.dot(gparams[2], mask)
         #Create a list of 2 tuples for updates.
         for param, gparam in zip(params, gparams):
             updates.append((param, param-learning_rate*gparam))
@@ -77,6 +77,7 @@ class AutoEncoder(object):
             adding = 0
             for row in xrange(0,self.m, mini_batch_size):
                 adding=train(row)[0]
+                #print parak
                 # print train(row)[0]
 	    global_list.append(adding)
         
@@ -185,7 +186,7 @@ def m_test(data):
     activation_function = T.nnet.sigmoid
     output_function=activation_function
     A = AutoEncoder(X, 100, activation_function, output_function)
-    A.train(5,100)
+    A.train(40,100)
     W=np.transpose(A.get_weights()[0])
     plot_first_k_numbers(W, 100)
  
