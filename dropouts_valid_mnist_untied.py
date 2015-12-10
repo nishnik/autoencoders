@@ -80,7 +80,7 @@ class AutoEncoder(object):
         
         gparams_shared = theano.shared(gparams,'gparams_shared')
         gparams[0] = gparams[0] * arr_n
-        gparams[1] = gparams[1] * arr_n
+        gparams[2] = gparams[2] * arr_n
         #x_printed1 = theano.printing.Print('this is a very important value')(gparams[0])
         #x_printed2 = theano.printing.Print('this is a very important value')(gparams[1])
 
