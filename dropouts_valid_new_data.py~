@@ -53,10 +53,11 @@ class AutoEncoder(object):
         is_dropout = T.dscalar('is_dropout')
         params = [self.W, self.b1, self.b2]
         hidden = self.activation_function(T.dot(x, self.W)+self.b1)
+        hidden_validation = self.activation_function(T.dot(x, self.W*0.5)+self.b1)
         arr_n = self.get_mask(self.b1,0.5)
         hidden_tilde = hidden
         hidden_tilde = arr_n * hidden
-        output_without_drop = T.dot(hidden,T.transpose(self.W))+self.b2
+        output_without_drop = T.dot(hidden_validation,T.transpose(self.W*0.5))+self.b2
         output_without_drop = self.output_function(output_without_drop)
         output_dropout = T.dot(hidden_tilde,T.transpose(self.W))+self.b2
         output_dropout = self.output_function(output_dropout)
@@ -102,7 +103,7 @@ class AutoEncoder(object):
             for row in xrange(0,self.Y_m, mini_batch_size):
                 cost_valid = cost_valid + valid(row)[0]
             global_valid_cost.append((cost_valid/self.Y_m))
-	    global_train_cost.append((cost_train/self.m))
+            global_train_cost.append((cost_train/self.m))
         
         end_time = time.clock()
         print "Average time per epoch=", (end_time-start_time)/n_epochs
@@ -219,8 +220,8 @@ def m_test(data):
     Y=data[1]
     activation_function = T.nnet.sigmoid
     output_function=activation_function
-    A = AutoEncoder(X,Y, 100, activation_function, output_function)
-    A.train(5,100)
+    A = AutoEncoder(X,Y, 700, activation_function, output_function)
+    A.train(30,100)
     W=np.transpose(A.get_weights()[0])
     plot_first_k_numbers(W, 100)
     import csv
