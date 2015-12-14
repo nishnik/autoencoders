@@ -53,11 +53,11 @@ class AutoEncoder(object):
         is_dropout = T.dscalar('is_dropout')
         params = [self.W, self.b1, self.b2]
         hidden = self.activation_function(T.dot(x, self.W)+self.b1)
-        hidden_validation = self.activation_function(T.dot(x, self.W*0.5)+self.b1)
+        hidden_validation = self.activation_function(T.dot(x, self.W)+self.b1)
         arr_n = self.get_mask(self.b1,0.5)
         hidden_tilde = hidden
         hidden_tilde = arr_n * hidden
-        output_without_drop = T.dot(hidden_validation,T.transpose(self.W*0.5))+self.b2
+        output_without_drop = T.dot(hidden_validation,T.transpose(self.W))+self.b2
         output_without_drop = self.output_function(output_without_drop)
         output_dropout = T.dot(hidden_tilde,T.transpose(self.W))+self.b2
         output_dropout = self.output_function(output_dropout)
@@ -212,7 +212,7 @@ def plot_first_k_numbers(X,k):
         left='off', 
         right='off',    # ticks along the top edge are off
         labelleft='off')
-    
+    fig.savefig("dec11.jpg")
     fig.show()
 
 def m_test(data):
@@ -221,16 +221,16 @@ def m_test(data):
     activation_function = T.nnet.sigmoid
     output_function=activation_function
     A = AutoEncoder(X,Y, 700, activation_function, output_function)
-    A.train(30,100)
+    A.train(250,100)
     W=np.transpose(A.get_weights()[0])
     plot_first_k_numbers(W, 100)
     import csv
-    with open('weights_valid_new_data.csv', 'w') as fp:
+    with open('dec11.csv', 'w') as fp:
         a = csv.writer(fp, delimiter=',')
         a.writerows(W)
 
     import scipy.io as sio
-    sio.savemat('weights_valid_new_data.mat',{'weights':W})
+    sio.savemat('dec11.mat',{'weights':W})
  
 m_test(data)
 import matplotlib.pyplot as plt
@@ -238,5 +238,6 @@ plt.figure()
 plt.plot(range(len(global_train_cost)),global_train_cost)
 plt.plot(range(len(global_valid_cost)),global_valid_cost)
 plt.legend(['train data','validation data'],loc='upper left')
+plt.savefig("dec11_cost.jpg")
 plt.show()
 
